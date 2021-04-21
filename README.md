@@ -2,13 +2,13 @@
 
 
 ```
-name = "Bozhidar"
+ime = "Bozhidar"
 
 ako (e_istina):
     togava wzemi_imeto
 
 wzemi_imeto:
-    pokaji name
+    pokaji ime
 ```
 
 ->>save this file to test.basic
