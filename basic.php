@@ -324,7 +324,7 @@ class Parser {
 			}
 
 			// Is it a print statement?
-			else if (isset($this->current()->token) && $this->current()->token == "print") {
+			else if (isset($this->current()->token) && ($this->current()->token == "pokaji")) {
 				// Parse the expression and create new print statement
 				$this->position++;
 				$statements[] = new PrintStatement($this->expression());
@@ -348,7 +348,7 @@ class Parser {
 			}
 
 			// Is it an if statement?
-			else if (isset($this->current()->token) && $this->current()->token == "if") {
+			else if (isset($this->current()->token) && $this->current()->token == "ako") {
 				// This is where it gets slightly more complex. We first want to parse an expression,
 				// which is the condition.
 				$this->position++;
