@@ -1,6 +1,7 @@
 # phpInterpretator
 
 
+```
 name = "Bozhidar"
 
 ako (e_istina):
@@ -8,7 +9,8 @@ ako (e_istina):
 
 wzemi_imeto:
     pokaji name
+```
 
 ->>save this file to test.basic
     
-php basic.php test.basic
+# php basic.php test.basic
