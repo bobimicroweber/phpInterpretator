@@ -1,17 +1,25 @@
 <h1>My name is: <basic-script>
     name = "Bozhidar"
 
-    ako (e_istina):
-        togava wzemi_imeto
+    if (true):
+        return getTheName
 
-    wzemi_imeto:
-        pokaji name
+    getTheName:
+        echo name
 </basic-script></h1>
 
 <p>
-2+2=
+2+2=<basic-script>
+echo 2 + 2
+</basic-script>
+</p>
+
+
+<p>
+Existing variables are:
+
 <basic-script>
-pokaji 2 + 2
+    echo name
 </basic-script>
 
 </p>
