@@ -1,7 +1,17 @@
-name = "Bozhidar"
+<h1>My name is: <basic-script>
+    name = "Bozhidar"
 
-ako (e_istina):
-    togava wzemi_imeto
+    ako (e_istina):
+        togava wzemi_imeto
 
-wzemi_imeto:
-    pokaji name
+    wzemi_imeto:
+        pokaji name
+</basic-script></h1>
+
+<p>
+2+2=
+<basic-script>
+pokaji 2 + 2
+</basic-script>
+
+</p>

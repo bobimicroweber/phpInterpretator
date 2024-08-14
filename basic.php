@@ -65,6 +65,12 @@ class Basic {
 	 * @author Bozhidar Slaveykov
 	 */
 	public function interpret($source) {
+
+        self::$current_statement = 0;
+        self::$statements = [];
+        self::$labels = [];
+        self::$variables = [];
+
 		// Tokenise
 		$tokens = $this->tokenise($source);
 
@@ -73,10 +79,14 @@ class Basic {
 		$parser->parse();
 
 		// Loop through the statements and execute them
+
+        $output = '';
 		while (self::$current_statement < count(self::$statements)) {
-			self::$statements[self::$current_statement]->execute();
+			$output .= self::$statements[self::$current_statement]->execute();
 			self::$current_statement++;
 		}
+
+        return $output;
 	}
 
 	/**
@@ -596,7 +606,7 @@ class PrintStatement implements Statement {
 	}
 
 	public function execute() {
-		print $this->expression->evaluate() . "\n";
+		return $this->expression->evaluate() . "\n";
 	}
 }
 
@@ -782,7 +792,33 @@ if (!isset($argv[1])) {
 	// Get the file
 	$source = file_get_contents($argv[1]);
 
-	// Create a new parser
-	$basic = new Basic();
-	$basic->interpret($source);
+    // Code blocks
+    $startCodeBlock = '<basic-script>';
+    $endCodeBlock = '</basic-script>';
+
+    $output = $source;
+
+    // Create a new parser
+    $basic = new Basic();
+
+    // Find all code blocks
+    $startPos = 0;
+    while (($startPos = strpos($source, $startCodeBlock, $startPos)) !== false) {
+
+        $endPos = strpos($source, $endCodeBlock, $startPos);
+        if ($endPos === false) {
+            break;
+        }
+        $codeBlock = substr($source, $startPos + strlen($startCodeBlock), $endPos - $startPos - strlen($startCodeBlock));
+        $startPos = $endPos + strlen($endCodeBlock);
+
+       $interpretOutput = $basic->interpret($codeBlock);
+
+       // Replace output
+        $output = str_replace($startCodeBlock . $codeBlock . $endCodeBlock, trim($interpretOutput), $output);
+
+    }
+
+    echo $output;
+
 }
