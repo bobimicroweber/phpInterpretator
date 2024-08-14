@@ -115,7 +115,8 @@ class Basic {
 		// a time and build up a tokenised representation of the source
 		for ($i = 0; $i < strlen($source); $i++) {
 			// Get the current character
-			$char = $source{$i};
+            $sourceSplit = str_split($source);
+            $char = $sourceSplit[$i];
 
 			// Switch the state
 			switch ($state) {
