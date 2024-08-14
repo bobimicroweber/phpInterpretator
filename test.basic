@@ -1,11 +1,11 @@
 <h1>My name is: <basic-script>
-    name = "Bozhidar"
-
-    if (true):
-        return getTheName
-
-    getTheName:
-        echo name
+    $name = "Bozhidar";
+    if (true) {
+        return getTheName;
+    }
+    getTheName: {
+        echo $name;
+    }
 </basic-script></h1>
 
 <p>
@@ -19,7 +19,7 @@ echo 2 + 2
 Existing variables are:
 
 <basic-script>
-    echo name
+    echo $name
 </basic-script>
 
 </p>
