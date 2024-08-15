@@ -9,9 +9,50 @@ class Parser {
     }
 
     public function parse() {
-        $classNode = $this->parseClass();
-        return $classNode;
+        $statements = [];
+        while ($this->currentToken()['type'] !== 'EOF') {
+            $statements[] = $this->parseStatement();
+        }
+        return $statements;
     }
+
+    private function parseStatement() {
+        if ($this->currentToken()['type'] === 'CLASS') {
+            return $this->parseClass();
+        } elseif ($this->currentToken()['type'] === 'DOLLAR') {
+            return $this->parseAssignment();
+        }
+        throw new Exception("Unknown statement");
+    }
+
+    private function parseAssignment() {
+
+        $this->consume('DOLLAR');
+        $variableName = $this->consume('IDENT')['value'];
+        $this->consume('ASSIGN');
+        $newObject = $this->parseNewObject();
+        $this->consume('SEMI');
+
+        return ['type' => 'Assignment', 'variable' => $variableName, 'value' => $newObject];
+    }
+
+    private function parseNewObject() {
+        $this->consume('NEW');
+        $className = $this->consume('IDENT')['value'];
+        $this->consume('LPAREN');
+        $this->consume('RPAREN');
+        return ['type' => 'NewObject', 'className' => $className];
+    }
+
+    private function parseMethodCall($variable) {
+        $this->consume('ARROW');
+        $methodName = $this->consume('IDENT')['value'];
+        $this->consume('LPAREN');
+        $this->consume('RPAREN');
+        $this->consume('SEMI');
+        return ['type' => 'MethodCall', 'variable' => $variable, 'method' => $methodName];
+    }
+
 
     private function parseClass() {
 
@@ -56,9 +97,9 @@ class Parser {
 
     private function parseVariable()
     {
-        $this->consume('DOLAR');
+        $this->consume('DOLLAR');
         $variableName = $this->consume('IDENT')['value'];
-        $this->consume('EQUAL');
+        $this->consume('ASSIGN');
 
         if ($this->currentToken()['type'] == 'DQUOTE') {
             // Variable Strings

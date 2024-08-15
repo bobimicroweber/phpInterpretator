@@ -15,7 +15,7 @@ class Lexer {
     const TOKEN_NEW = 'NEW';
     const TOKEN_IDENT = 'IDENT';
     const TOKEN_EOF = 'EOF';
-    const TOKEN_DOLAR = 'DOLAR';
+    const TOKEN_DOLLAR = 'DOLLAR';
 
     const TOKEN_DASH = 'DASH';
 
@@ -27,7 +27,7 @@ class Lexer {
 
     const TOKEN_EXMARK = 'EXMARK';
 
-    const TOKEN_EQUAL = 'EQUAL';
+    const TOKEN_ASSIGN = 'ASSIGN';
 
     const TOKEN_STRING = 'STRING';
 
@@ -65,7 +65,7 @@ class Lexer {
                 $tokens[] = ['type' => self::TOKEN_SEMI, 'value' => ';'];
             }
             elseif ($char === '$') {
-                $tokens[] = ['type' => self::TOKEN_DOLAR, 'value' => '$'];
+                $tokens[] = ['type' => self::TOKEN_DOLLAR, 'value' => '$'];
             } elseif ($char === '-') {
                 $tokens[] = ['type' => self::TOKEN_DASH, 'value' => '-'];
             } elseif ($char === '>') {
@@ -79,7 +79,7 @@ class Lexer {
             } elseif ($char === '!') {
                 $tokens[] = ['type' => self::TOKEN_EXMARK, 'value' => '!'];
             } elseif ($char === '=') {
-                $tokens[] = ['type' => self::TOKEN_EQUAL, 'value' => '='];
+                $tokens[] = ['type' => self::TOKEN_ASSIGN, 'value' => '='];
             } elseif ($char === '/') {
                 $tokens[] = ['type' => self::TOKEN_SLASH, 'value' => '/'];
             } elseif (ctype_alpha($char) || $char === '_') {

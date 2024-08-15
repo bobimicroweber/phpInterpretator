@@ -2,6 +2,7 @@
 include 'vendor/autoload.php';
 include 'Lexer.php';
 include 'Parser.php';
+include 'Interpreter.php';
 
 $ownSyntax = '
 
@@ -26,6 +27,7 @@ class Dog {
     
 }
 
+$dog = new Dog();
 
 
 ';
@@ -35,6 +37,10 @@ $tokens = $lexer->tokenize();
 //dd($tokens);
 
 $parser = new Parser($tokens);
-$ast = $parser->parse();
-//dd($ast);
+$statements = $parser->parse();
+//dd($statements);
 
+$interpreter = new Interpreter();
+$interpreter->interpret($statements);
+
+dd($interpreter);

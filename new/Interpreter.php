@@ -5,6 +5,7 @@ class Interpreter {
     private $variables = [];
 
     public function interpret($statements) {
+
         foreach ($statements as $statement) {
             switch ($statement['type']) {
                 case 'Class':
