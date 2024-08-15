@@ -5,6 +5,28 @@ class Lexer {
     private $position = 0;
     private $tokens = [];
 
+    const TOKEN_LBRACE = 'LBRACE';
+    const TOKEN_RBRACE = 'RBRACE';
+    const TOKEN_LPAREN = 'LPAREN';
+    const TOKEN_RPAREN = 'RPAREN';
+    const TOKEN_SEMI = 'SEMI';
+    const TOKEN_CLASS = 'CLASS';
+    const TOKEN_FUNCTION = 'FUNCTION';
+    const TOKEN_NEW = 'NEW';
+    const TOKEN_IDENT = 'IDENT';
+    const TOKEN_EOF = 'EOF';
+    const TOKEN_DOLAR = 'DOLAR';
+
+    const TOKEN_DASH = 'DASH';
+
+    const TOKEN_GT = 'GT';
+    const TOKEN_LT = 'LT';
+
+    const TOKEN_DQUOTE = 'DQUOTE';
+    const TOKEN_SQUOTE = 'SQUOTE';
+
+    const TOKEN_EXMARK = 'EXMARK';
+
     public function __construct($input) {
         $this->input = $input;
     }
@@ -22,16 +44,36 @@ class Lexer {
             }
 
             if ($char === '{') {
-                $tokens[] = ['type' => 'LBRACE', 'value' => '{'];
-            } elseif ($char === '}') {
-                $tokens[] = ['type' => 'RBRACE', 'value' => '}'];
-            } elseif ($char === '(') {
-                $tokens[] = ['type' => 'LPAREN', 'value' => '('];
-            } elseif ($char === ')') {
-                $tokens[] = ['type' => 'RPAREN', 'value' => ')'];
-            } elseif ($char === ';') {
-                $tokens[] = ['type' => 'SEMI', 'value' => ';'];
-            } elseif (ctype_alpha($char) || $char === '_') {
+                $tokens[] = ['type' => self::TOKEN_LBRACE, 'value' => '{'];
+            }
+            elseif ($char === '}') {
+                $tokens[] = ['type' => self::TOKEN_RBRACE, 'value' => '}'];
+            }
+            elseif ($char === '(') {
+                $tokens[] = ['type' => self::TOKEN_LPAREN, 'value' => '('];
+            }
+            elseif ($char === ')') {
+                $tokens[] = ['type' => self::TOKEN_RPAREN, 'value' => ')'];
+            }
+            elseif ($char === ';') {
+                $tokens[] = ['type' => self::TOKEN_SEMI, 'value' => ';'];
+            }
+            elseif ($char === '$') {
+                $tokens[] = ['type' => self::TOKEN_DOLAR, 'value' => '$'];
+            } elseif ($char === '-') {
+                $tokens[] = ['type' => self::TOKEN_DASH, 'value' => '-'];
+            } elseif ($char === '>') {
+                $tokens[] = ['type' => self::TOKEN_GT, 'value' => '>'];
+            } elseif ($char === '<') {
+                $tokens[] = ['type' => self::TOKEN_LT, 'value' => '<'];
+            } elseif ($char === '"') {
+                $tokens[] = ['type' => self::TOKEN_DQUOTE, 'value' => '"'];
+            } elseif ($char === "'") {
+                $tokens[] = ['type' => self::TOKEN_SQUOTE, 'value' => "'"];
+            } elseif ($char === '!') {
+                $tokens[] = ['type' => self::TOKEN_EXMARK, 'value' => '!'];
+            }
+            elseif (ctype_alpha($char) || $char === '_') {
                 $value = $this->consumeIdentifier();
                 $type = $this->determineType($value);
                 $tokens[] = ['type' => $type, 'value' => $value];

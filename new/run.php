@@ -5,19 +5,28 @@ include 'Parser.php';
 
 $ownSyntax = '
 
-class Dog { 
-    function bark() { 
+public class Dog { 
     
+    var $name;
+    
+    function bark() { 
+      echo "Woof!";
     }
+    
+    function eat() { 
+        echo "Nom nom nom";
+    }
+    
+    function getName() { 
+        return $this->name;
+    }
+    
 }
 
 ';
 
 $lexer = new Lexer($ownSyntax);
 $tokens = $lexer->tokenize();
-dd($tokens);
-
-
 
 $parser = new Parser($tokens);
 $ast = $parser->parse();

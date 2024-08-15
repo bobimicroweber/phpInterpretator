@@ -14,17 +14,36 @@ class Parser {
     }
 
     private function parseClass() {
+
+        $visibility = 'public';
+        $current = $this->tokens[$this->position];
+        if (isset($current['type']) && $current['type'] == 'IDENT') {
+            $visibility = $current['value'];
+            $this->position++;
+        }
+
         $this->consume('CLASS');
+
         $className = $this->consume('IDENT')['value'];
+
         $this->consume('LBRACE');
+
         $methods = [];
+        $variables = [];
 
         while ($this->currentToken()['type'] !== 'RBRACE') {
-            $methods[] = $this->parseMethod();
+                $this->position++;
+//            $methods[] = $this->parseMethod();
         }
 
         $this->consume('RBRACE');
-        return ['type' => 'Class', 'name' => $className, 'methods' => $methods];
+        return [
+            'type' => 'Class',
+            'name' => $className,
+            'methods' => $methods,
+            'variables' => $variables,
+            'visibility' => $visibility
+        ];
     }
 
     private function parseMethod() {
