@@ -31,10 +31,11 @@ class Lexer {
                 $tokens[] = ['type' => 'RPAREN', 'value' => ')'];
             } elseif ($char === ';') {
                 $tokens[] = ['type' => 'SEMI', 'value' => ';'];
-            } elseif (preg_match('/[a-zA-Z_]\w*/', $char, $matches)) {
+            } elseif (ctype_alpha($char) || $char === '_') {
                 $value = $this->consumeIdentifier();
                 $type = $this->determineType($value);
                 $tokens[] = ['type' => $type, 'value' => $value];
+                continue;
             } else {
                 throw new Exception("Unknown character: $char");
             }
@@ -48,7 +49,7 @@ class Lexer {
 
     private function consumeIdentifier() {
         $start = $this->position;
-        while ($this->position < strlen($this->input) && ctype_alnum($this->input[$this->position])) {
+        while ($this->position < strlen($this->input) && (ctype_alnum($this->input[$this->position]) || $this->input[$this->position] === '_')) {
             $this->position++;
         }
         return substr($this->input, $start, $this->position - $start);
