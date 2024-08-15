@@ -1,0 +1,17 @@
+{
+    "name": "bobi/new",
+    "autoload": {
+        "psr-4": {
+            "Bobi\\New\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Bozhidar",
+            "email": "bobi@microweber.com"
+        }
+    ],
+    "require": {
+        "symfony/var-dumper": "^7.1"
+    }
+}
