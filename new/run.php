@@ -26,6 +26,8 @@ class Dog {
     
 }
 
+
+
 ';
 
 $lexer = new Lexer($ownSyntax);
@@ -34,6 +36,5 @@ $tokens = $lexer->tokenize();
 
 $parser = new Parser($tokens);
 $ast = $parser->parse();
-
-dd($ast);
+//dd($ast);
 
