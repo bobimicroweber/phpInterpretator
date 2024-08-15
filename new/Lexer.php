@@ -27,6 +27,12 @@ class Lexer {
 
     const TOKEN_EXMARK = 'EXMARK';
 
+    const TOKEN_EQUAL = 'EQUAL';
+
+    const TOKEN_STRING = 'STRING';
+
+    const TOKEN_SLASH = 'SLASH';
+
     public function __construct($input) {
         $this->input = $input;
     }
@@ -72,13 +78,22 @@ class Lexer {
                 $tokens[] = ['type' => self::TOKEN_SQUOTE, 'value' => "'"];
             } elseif ($char === '!') {
                 $tokens[] = ['type' => self::TOKEN_EXMARK, 'value' => '!'];
-            }
-            elseif (ctype_alpha($char) || $char === '_') {
+            } elseif ($char === '=') {
+                $tokens[] = ['type' => self::TOKEN_EQUAL, 'value' => '='];
+            } elseif ($char === '/') {
+                $tokens[] = ['type' => self::TOKEN_SLASH, 'value' => '/'];
+            } elseif (ctype_alpha($char) || $char === '_') {
                 $value = $this->consumeIdentifier();
                 $type = $this->determineType($value);
                 $tokens[] = ['type' => $type, 'value' => $value];
                 continue;
-            } else {
+            }
+            else if (ctype_digit($char)) {
+                $value = $this->consumeNumber();
+                $tokens[] = ['type' => 'NUMBER', 'value' => $value];
+                continue;
+            }
+            else {
                 throw new Exception("Unknown character: $char");
             }
 
@@ -92,6 +107,14 @@ class Lexer {
     private function consumeIdentifier() {
         $start = $this->position;
         while ($this->position < strlen($this->input) && (ctype_alnum($this->input[$this->position]) || $this->input[$this->position] === '_')) {
+            $this->position++;
+        }
+        return substr($this->input, $start, $this->position - $start);
+    }
+
+    public function consumeNumber() {
+        $start = $this->position;
+        while ($this->position < strlen($this->input) && ctype_digit($this->input[$this->position])) {
             $this->position++;
         }
         return substr($this->input, $start, $this->position - $start);

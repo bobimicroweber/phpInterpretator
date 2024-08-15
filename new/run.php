@@ -5,20 +5,23 @@ include 'Parser.php';
 
 $ownSyntax = '
 
-public class Dog { 
+class Dog { 
     
-    var $name;
+    $description = "Snoop Dogg";
+    $name = "Dog";
+    $color = "Brown";
+    $location = "Home";
     
-    function bark() { 
-      echo "Woof!";
+    private function bark() {
+        
     }
     
-    function eat() { 
-        echo "Nom nom nom";
+    public function run() {
+        
     }
     
-    function getName() { 
-        return $this->name;
+    public function eat() {
+        
     }
     
 }
@@ -27,6 +30,7 @@ public class Dog {
 
 $lexer = new Lexer($ownSyntax);
 $tokens = $lexer->tokenize();
+//dd($tokens);
 
 $parser = new Parser($tokens);
 $ast = $parser->parse();
