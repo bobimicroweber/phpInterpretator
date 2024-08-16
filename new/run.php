@@ -29,7 +29,7 @@ class Dog {
 
 $dog = new Dog();
 
-echo($dog);
+echo("basi_qkoto");
 
 ';
 $simpleSyntax = '
@@ -46,7 +46,6 @@ $tokens = $lexer->tokenize();
 
 $parser = new Parser($tokens);
 $statements = $parser->parse();
-//dd($statements);
 
 $interpreter = new Interpreter();
 $interpreter->interpret($statements);

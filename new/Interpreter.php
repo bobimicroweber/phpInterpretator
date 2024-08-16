@@ -45,6 +45,12 @@ class Interpreter {
                         var_dump($this->globalScope[$arg['name']]);
                     }
                 }
+                if ($arg['type'] === 'String') {
+                    echo $arg['value'] . "\n";
+                }
+                if ($arg['type'] === 'Number') {
+                    echo $arg['value'] . "\n";
+                }
             }
         } else {
             throw new Exception("Unknown function: " . $node['name']);

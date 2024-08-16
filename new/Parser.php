@@ -120,7 +120,6 @@ class Parser {
         /**
          * $numberOne, $numberTwo
          */
-        $parsed = false;
         while(true) {
             if ($this->currentToken()['type'] == 'DOLLAR') {
 
@@ -138,6 +137,36 @@ class Parser {
                     break;
                 }
 
+            } else if ($this->currentToken()['type'] == 'NUMBER') {
+
+                $arguments[] = [
+                    'type' => 'Number',
+                    'value' => $this->consume('NUMBER')['value']
+                ];
+
+                if ($this->currentToken()['type'] == 'COMMA') {
+                    $this->consume('COMMA');
+                } else {
+                    break;
+                }
+
+            } else if ($this->currentToken()['type'] == 'DQUOTE') {
+
+                $this->consume('DQUOTE');
+                $arguments[] = [
+                    'type' => 'String',
+                    'value' => $this->consume('IDENT')['value']
+                ];
+                $this->consume('DQUOTE');
+
+                if ($this->currentToken()['type'] == 'COMMA') {
+                    $this->consume('COMMA');
+                } else {
+                    break;
+                }
+
+            } else {
+                break;
             }
         }
 
