@@ -40,8 +40,22 @@ class Parser {
         return ['type' => 'NewObject', 'className' => $className];
     }
 
+    private function parsePropertyCall()
+    {
+        $this->consume('DASH');
+        $this->consume('GT');
+        $propertyName = $this->consume('IDENT')['value'];
+
+        return [
+            'type' => 'PropertyCall',
+            'property' => $propertyName
+        ];
+    }
+
     private function parseMethodCall($variable) {
-        $this->consume('ARROW');
+        $this->consume('DASH');
+        $this->consume('GT');
+
         $methodName = $this->consume('IDENT')['value'];
         $this->consume('LPAREN');
         $this->consume('RPAREN');
@@ -67,6 +81,8 @@ class Parser {
         $methods = [];
         $variables = [];
 
+        $maxI = 10000;
+        $i = 0;
         while ($this->currentToken()['type'] !== 'RBRACE') {
             $current = $this->currentToken();
             if (
@@ -74,8 +90,14 @@ class Parser {
                 ($current['type'] == 'IDENT' && $this->tokens[$this->position + 1]['type'] == 'FUNCTION')
             ) {
                 $methods[] = $this->parseMethod();
-            } else {
+            } else if ($this->tokens[$this->position]['type'] == 'DOLLAR') {
                 $variables[] = $this->parseVariable();
+            } else {
+                throw new Exception("Unknown class member: " . $this->currentToken()['type']);
+            }
+
+            if ($i++ > $maxI) {
+                throw new Exception("Infinite loop #parseClass");
             }
         }
 
@@ -100,6 +122,11 @@ class Parser {
             $this->consume('LPAREN');
 
             $functionArguments = $this->parseFunctionArguments();
+
+            if ($this->currentToken()['type'] =='DASH') {
+                $functionArguments = [];
+                $functionArguments[] = $this->parsePropertyCall();
+            }
 
             $this->consume('RPAREN');
             $this->consume('SEMI');
@@ -177,6 +204,11 @@ class Parser {
     {
         $this->consume('DOLLAR'); // $
         $variableName = $this->consume('IDENT')['value'];//text
+
+        if ($this->currentToken()['type'] == 'DASH') {
+            return $this->parseMethodCall($variableName);
+        }
+
         $this->consume('ASSIGN'); // =
 
         /**
@@ -235,22 +267,38 @@ class Parser {
         $methodName = $this->consume('IDENT')['value'];
 
         $this->consume('LPAREN');
+        // Assuming no parameters for now
         $this->consume('RPAREN');
 
         $this->consume('LBRACE');
+
+        // Parse the body of the method
+        $methodBody = [];
+        $maxI = 10000;
+        $i = 0;
+        while ($this->currentToken()['type'] !== 'RBRACE') {
+            $methodBody[] = $this->parseStatement();
+            if ($i++ > $maxI) {
+                throw new Exception("Infinite loop #parseMethod");
+            }
+        }
+
         $this->consume('RBRACE');
 
         return [
             'type' => 'Method',
             'name' => $methodName,
-            'visibility' => $methodVisibility
+            'visibility' => $methodVisibility,
+            'body' => $methodBody
         ];
     }
+
 
     private function consume($expectedType) {
         $token = $this->tokens[$this->position];
         if ($token['type'] !== $expectedType) {
-            throw new Exception("Expected $expectedType, got {$token['type']}");
+            $calledFrom = debug_backtrace()[1]['function'];
+            throw new Exception("Expected $expectedType, got {$token['type']}, called from $calledFrom");
         }
         $this->position++;
         return $token;

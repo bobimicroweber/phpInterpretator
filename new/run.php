@@ -6,6 +6,21 @@ include 'Interpreter.php';
 
 $ownSyntax = '
 
+
+class Cat { 
+    
+    $description = "Doga Cat";
+    $name = "Cat";
+    $color = "Brown";
+    $location = "Home";
+    
+    private function meow() {
+       echo($this->name);
+       echo($this->color); 
+    }
+    
+}
+
 class Dog { 
     
     $description = "Snoop Dogg";
@@ -14,29 +29,25 @@ class Dog {
     $location = "Home";
     
     private function bark() {
-        
-    }
-    
-    public function run() {
-        
-    }
-    
-    public function eat() {
-        
+       echo($this->name);
+       echo($this->color); 
     }
     
 }
 
 $dog = new Dog();
+$dog->bark();
 
-echo("basi_qkoto");
+
+$cat = new Cat();
+$cat->meow();
 
 ';
 $simpleSyntax = '
 $numberOne = 10;
 $numberTwo = 20;
 
-echo($numberTwo);
+echo("qko");
 
 ';
 
@@ -46,6 +57,7 @@ $tokens = $lexer->tokenize();
 
 $parser = new Parser($tokens);
 $statements = $parser->parse();
+//dd($statements);
 
 $interpreter = new Interpreter();
 $interpreter->interpret($statements);

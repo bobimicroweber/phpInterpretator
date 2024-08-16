@@ -9,13 +9,14 @@ class Interpreter {
         }
     }
 
-    private function evaluate($node) {
+    private function evaluate($node, $object = null) {
+
         switch ($node['type']) {
             case 'Class':
                 $this->evaluateClass($node);
                 break;
             case 'FunctionCall':
-                $this->evaluateFunctionCall($node);
+                $this->evaluateFunctionCall($node, $object);
                 break;
             case 'Variable':
                 $this->evaluateVariable($node);
@@ -35,21 +36,41 @@ class Interpreter {
         $this->globalScope[$node['name']] = $node;
     }
 
-    private function evaluateFunctionCall($node) {
+    private function evaluateFunctionCall($node, $object = null) {
+
         if ($node['name'] === 'echo') {
-            foreach ($node['arguments'] as $arg) {
-                if ($arg['type'] === 'Variable') {
-                    if (is_string($this->globalScope[$arg['name']])) {
-                        echo $this->globalScope[$arg['name']] . "\n";
-                    } else {
-                        var_dump($this->globalScope[$arg['name']]);
+            if (isset($node['arguments'])) {
+                foreach ($node['arguments'] as $arg) {
+                    if ($arg['type'] === 'PropertyCall') {
+                        $propertyFound = false;
+                        if (isset($this->globalScope[$object['__class']]['variables'])) {
+                            foreach ($this->globalScope[$object['__class']]['variables'] as $variable) {
+                                if ($variable['name'] === $arg['property']) {
+                                    $propertyFound = true;
+                                    echo $variable['value'];
+                                }
+                            }
+                        }
+                        if (!$propertyFound) {
+                            throw new Exception("Property " . $arg['property'] . " is not defined in class " . $object['__class']);
+                        }
                     }
-                }
-                if ($arg['type'] === 'String') {
-                    echo $arg['value'] . "\n";
-                }
-                if ($arg['type'] === 'Number') {
-                    echo $arg['value'] . "\n";
+                    if ($arg['type'] === 'Variable') {
+                        if (!isset($this->globalScope[$arg['name']])) {
+                            throw new Exception("Variable " . $arg['name'] . " is not defined");
+                        }
+                        if (is_string($this->globalScope[$arg['name']])) {
+                            echo $this->globalScope[$arg['name']] . "\n";
+                        } else {
+                            var_dump($this->globalScope[$arg['name']]);
+                        }
+                    }
+                    if ($arg['type'] === 'String') {
+                        echo $arg['value'] . "\n";
+                    }
+                    if ($arg['type'] === 'Number') {
+                        echo $arg['value'] . "\n";
+                    }
                 }
             }
         } else {
@@ -95,8 +116,10 @@ class Interpreter {
 
         foreach ($classDef['methods'] as $method) {
             if ($method['name'] === $methodName) {
-                // Currently, just printing a message; you'd handle the method body here.
-                echo "Calling method $methodName on $variable\n";
+                // Execute the method body
+                foreach ($method['body'] as $statement) {
+                    $this->evaluate($statement, $object);
+                }
                 return;
             }
         }
