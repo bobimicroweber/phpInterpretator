@@ -44,7 +44,7 @@ $tokens = $lexer->tokenize();
 
 $parser = new Parser($tokens);
 $statements = $parser->parse();
-dd($statements);
+//dd($statements);
 
 $interpreter = new Interpreter();
 $interpreter->interpret($statements);
