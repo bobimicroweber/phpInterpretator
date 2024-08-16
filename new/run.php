@@ -34,7 +34,7 @@ $simpleSyntax = '
 $numberOne = 10;
 $numberTwo = 20;
 
-echo($numberOne);
+echo($numberTwo);
 
 ';
 
@@ -49,4 +49,4 @@ $statements = $parser->parse();
 $interpreter = new Interpreter();
 $interpreter->interpret($statements);
 
-dd($interpreter);
+//dd($interpreter);

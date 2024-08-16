@@ -1,95 +1,96 @@
 <?php
 
 class Interpreter {
-    private $classes = [];
-    private $variables = [];
+    private $globalScope = [];
 
     public function interpret($statements) {
-
         foreach ($statements as $statement) {
-            switch ($statement['type']) {
-                case 'Class':
-                    $this->defineClass($statement);
-                    break;
-                case 'Variable':
-                    $this->assignVariable($statement);
-                    break;
-                case 'MethodCall':
-                    $this->callMethod($statement);
-                    break;
+            $this->evaluate($statement);
+        }
+    }
+
+    private function evaluate($node) {
+        switch ($node['type']) {
+            case 'Class':
+                $this->evaluateClass($node);
+                break;
+            case 'FunctionCall':
+                $this->evaluateFunctionCall($node);
+                break;
+            case 'Variable':
+                $this->evaluateVariable($node);
+                break;
+            case 'NewObject':
+                return $this->evaluateNewObject($node);
+            case 'MethodCall':
+                $this->evaluateMethodCall($node);
+                break;
+            default:
+                throw new Exception("Unknown node type: " . $node['type']);
+        }
+    }
+
+    private function evaluateClass($node) {
+        // Store class definition in global scope
+        $this->globalScope[$node['name']] = $node;
+    }
+
+    private function evaluateFunctionCall($node) {
+        if ($node['name'] === 'echo') {
+            foreach ($node['arguments'] as $arg) {
+                if ($arg['type'] === 'Variable') {
+                    echo $this->globalScope[$arg['name']] . "\n";
+                }
+            }
+        } else {
+            throw new Exception("Unknown function: " . $node['name']);
+        }
+    }
+
+    private function evaluateVariable($node) {
+        if (isset($node['value']['type']) && $node['value']['type'] === 'NewObject') {
+            $this->globalScope[$node['name']] = $this->evaluateNewObject($node['value']);
+        } else {
+            $this->globalScope[$node['name']] = $node['value'];
+        }
+    }
+
+    private function evaluateNewObject($node) {
+        $className = $node['className'];
+
+        if (!isset($this->globalScope[$className])) {
+            throw new Exception("Class $className is not defined");
+        }
+
+        // Creating a simple object representation
+        return ['__class' => $className, '__properties' => []];
+    }
+
+    private function evaluateMethodCall($node) {
+        $variable = $node['variable'];
+
+        if (!isset($this->globalScope[$variable])) {
+            throw new Exception("Variable $variable is not defined");
+        }
+
+        $object = $this->globalScope[$variable];
+        $className = $object['__class'];
+        $methodName = $node['method'];
+
+        if (!isset($this->globalScope[$className])) {
+            throw new Exception("Class $className is not defined");
+        }
+
+        $classDef = $this->globalScope[$className];
+
+        foreach ($classDef['methods'] as $method) {
+            if ($method['name'] === $methodName) {
+                // Currently, just printing a message; you'd handle the method body here.
+                echo "Calling method $methodName on $variable\n";
+                return;
             }
         }
-    }
 
-    private function defineClass($classNode) {
-        $className = $classNode['name'];
-        $methods = [];
-
-        foreach ($classNode['methods'] as $methodNode) {
-            $methodName = $methodNode['name'];
-            $methods[$methodName] = function($instance) use ($methodName) {
-                echo "Method $methodName called on " . $instance->getClassName() . "\n";
-            };
-        }
-
-        $this->classes[$className] = [
-            'name' => $className,
-            'methods' => $methods
-        ];
-    }
-
-    private function assignVariable($assignmentNode) {
-
-        $variableName = $assignmentNode['name'];
-        $variableValue = $assignmentNode['value'];
-
-        if (isset($variableValue['type']) && $variableValue['type'] === 'NewObject') {
-            $this->variables[$variableName] = $this->instantiate($variableValue['className']);
-        } else {
-            $this->variables[$variableName] = $variableValue;
-        }
-    }
-
-    private function instantiate($className) {
-        if (!isset($this->classes[$className])) {
-            throw new Exception("Class $className not defined");
-        }
-
-        return new ObjectInstance($className, $this->classes[$className]['methods']);
-    }
-
-    private function callMethod($methodCallNode) {
-        $variableName = $methodCallNode['variable'];
-        $methodName = $methodCallNode['method'];
-
-        if (!isset($this->variables[$variableName])) {
-            throw new Exception("Variable \$$variableName not defined");
-        }
-
-        $object = $this->variables[$variableName];
-        $object->call($methodName);
-    }
-}
-
-class ObjectInstance {
-    private $className;
-    private $methods;
-
-    public function __construct($className, $methods) {
-        $this->className = $className;
-        $this->methods = $methods;
-    }
-
-    public function getClassName() {
-        return $this->className;
-    }
-
-    public function call($methodName) {
-        if (!isset($this->methods[$methodName])) {
-            throw new Exception("Method $methodName not found in class " . $this->className);
-        }
-
-        $method = $this->methods[$methodName];
-        $method($this);
+        throw new Exception("Method $methodName is not defined in class $className");
     }
 }
