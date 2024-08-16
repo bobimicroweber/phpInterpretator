@@ -24,9 +24,11 @@ class Parser {
             return $this->parseClass();
         } elseif ($current['type'] === 'DOLLAR') {
             return $this->parseVariable();
+        } elseif ($current['type'] === 'IDENT') {
+            return $this->parseIdentifier();
         }
 
-        throw new Exception("Unknown statement");
+        throw new Exception("Unknown statement: " . $current['type']. ' ' . $current['value']);
     }
 
 
@@ -86,6 +88,60 @@ class Parser {
             'variables' => $variables,
             'visibility' => $visibility
         ];
+    }
+
+    private function parseIdentifier()
+    {
+        // Parse function echo();
+        if ($this->currentToken()['type'] == 'IDENT' && $this->tokens[$this->position + 1]['type'] == 'LPAREN') {
+
+            $functionName = $this->currentToken()['value'];
+            $this->consume('IDENT');
+            $this->consume('LPAREN');
+
+            $functionArguments = $this->parseFunctionArguments();
+
+            $this->consume('RPAREN');
+            $this->consume('SEMI');
+
+
+            return [
+                'type' => 'FunctionCall',
+                'name' => $functionName,
+                'arguments' => $functionArguments
+            ];
+        }
+
+    }
+
+    private function parseFunctionArguments() {
+        $arguments = [];
+
+        /**
+         * $numberOne, $numberTwo
+         */
+        $parsed = false;
+        while(true) {
+            if ($this->currentToken()['type'] == 'DOLLAR') {
+
+                $this->consume('DOLLAR');
+                $variableName = $this->consume('IDENT')['value'];
+
+                $arguments[] = [
+                    'type' => 'Variable',
+                    'name' => $variableName
+                ];
+
+                if ($this->currentToken()['type'] == 'COMMA') {
+                    $this->consume('COMMA');
+                } else {
+                    break;
+                }
+
+            }
+        }
+
+        return $arguments;
     }
 
     private function parseVariable()

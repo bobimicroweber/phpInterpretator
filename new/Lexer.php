@@ -35,6 +35,8 @@ class Lexer {
 
     const TOKEN_PLUS = 'PLUS';
 
+    const TOKEN_COMMA = 'COMMA';
+
     public function __construct($input) {
         $this->input = $input;
     }
@@ -87,6 +89,8 @@ class Lexer {
             }
             elseif ($char === '+') {
                 $tokens[] = ['type' => self::TOKEN_PLUS, 'value' => '+'];
+            } elseif ($char === ',') {
+                $tokens[] = ['type' => self::TOKEN_COMMA, 'value' => ','];
             }
             elseif (ctype_alpha($char) || $char === '_') {
                 $value = $this->consumeIdentifier();

@@ -11,7 +11,7 @@ class Interpreter {
                 case 'Class':
                     $this->defineClass($statement);
                     break;
-                case 'Assignment':
+                case 'Variable':
                     $this->assignVariable($statement);
                     break;
                 case 'MethodCall':
@@ -39,9 +39,15 @@ class Interpreter {
     }
 
     private function assignVariable($assignmentNode) {
-        $variableName = $assignmentNode['variable'];
-        $newObjectNode = $assignmentNode['value'];
-        $this->variables[$variableName] = $this->instantiate($newObjectNode['className']);
+
+        $variableName = $assignmentNode['name'];
+        $variableValue = $assignmentNode['value'];
+
+        if (isset($variableValue['type']) && $variableValue['type'] === 'NewObject') {
+            $this->variables[$variableName] = $this->instantiate($variableValue['className']);
+        } else {
+            $this->variables[$variableName] = $variableValue;
+        }
     }
 
     private function instantiate($className) {
