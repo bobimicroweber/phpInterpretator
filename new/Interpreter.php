@@ -47,7 +47,7 @@ class Interpreter {
                             foreach ($this->globalScope[$object['__class']]['variables'] as $variable) {
                                 if ($variable['name'] === $arg['property']) {
                                     $propertyFound = true;
-                                    echo $variable['value'];
+                                    echo $variable['value'] . "\n";
                                 }
                             }
                         }

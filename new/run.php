@@ -28,19 +28,20 @@ class Dog {
     $color = "Brown";
     $location = "Home";
     
+    private function getLocation() {
+        echo($this->location);
+    }
+    
     private function bark() {
-       echo($this->name);
-       echo($this->color); 
+        echo("Bark");
     }
     
 }
 
 $dog = new Dog();
 $dog->bark();
+$dog->getLocation();
 
-
-$cat = new Cat();
-$cat->meow();
 
 ';
 $simpleSyntax = '
