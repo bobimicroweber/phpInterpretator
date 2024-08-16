@@ -39,7 +39,11 @@ class Interpreter {
         if ($node['name'] === 'echo') {
             foreach ($node['arguments'] as $arg) {
                 if ($arg['type'] === 'Variable') {
-                    echo $this->globalScope[$arg['name']] . "\n";
+                    if (is_string($this->globalScope[$arg['name']])) {
+                        echo $this->globalScope[$arg['name']] . "\n";
+                    } else {
+                        var_dump($this->globalScope[$arg['name']]);
+                    }
                 }
             }
         } else {

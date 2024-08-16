@@ -29,6 +29,8 @@ class Dog {
 
 $dog = new Dog();
 
+echo($dog);
+
 ';
 $simpleSyntax = '
 $numberOne = 10;
@@ -38,7 +40,7 @@ echo($numberTwo);
 
 ';
 
-$lexer = new Lexer($simpleSyntax);
+$lexer = new Lexer($ownSyntax);
 $tokens = $lexer->tokenize();
 //dd($tokens);
 
