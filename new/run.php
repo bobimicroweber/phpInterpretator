@@ -29,10 +29,14 @@ class Dog {
 
 $dog = new Dog();
 
+';
+$simpleSyntax = '
+$numberOne = 10;
+$numberTwo = 20;
 
 ';
 
-$lexer = new Lexer($ownSyntax);
+$lexer = new Lexer($simpleSyntax);
 $tokens = $lexer->tokenize();
 //dd($tokens);
 

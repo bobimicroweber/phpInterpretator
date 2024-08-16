@@ -17,24 +17,18 @@ class Parser {
     }
 
     private function parseStatement() {
-        if ($this->currentToken()['type'] === 'CLASS') {
+
+        $current = $this->currentToken();
+
+        if ($current['type'] === 'CLASS') {
             return $this->parseClass();
-        } elseif ($this->currentToken()['type'] === 'DOLLAR') {
-            return $this->parseAssignment();
+        } elseif ($current['type'] === 'DOLLAR') {
+            return $this->parseVariable();
         }
+
         throw new Exception("Unknown statement");
     }
 
-    private function parseAssignment() {
-
-        $this->consume('DOLLAR');
-        $variableName = $this->consume('IDENT')['value'];
-        $this->consume('ASSIGN');
-        $newObject = $this->parseNewObject();
-        $this->consume('SEMI');
-
-        return ['type' => 'Assignment', 'variable' => $variableName, 'value' => $newObject];
-    }
 
     private function parseNewObject() {
         $this->consume('NEW');
@@ -64,7 +58,6 @@ class Parser {
         }
 
         $this->consume('CLASS');
-
         $className = $this->consume('IDENT')['value'];
 
         $this->consume('LBRACE');
@@ -97,10 +90,26 @@ class Parser {
 
     private function parseVariable()
     {
-        $this->consume('DOLLAR');
-        $variableName = $this->consume('IDENT')['value'];
-        $this->consume('ASSIGN');
+        $this->consume('DOLLAR'); // $
+        $variableName = $this->consume('IDENT')['value'];//text
+        $this->consume('ASSIGN'); // =
 
+        /**
+         * Assign new object to variable
+         */
+        if ($this->currentToken()['type'] == 'NEW') {
+            $this->consume('NEW');
+            $className = $this->consume('IDENT')['value'];
+            $this->consume('LPAREN');
+            $this->consume('RPAREN');
+            $this->consume('SEMI');
+            return ['type' => 'Variable', 'name' => $variableName, 'value' => ['type' => 'NewObject', 'className' => $className]];
+        }
+
+        /**
+         * Assign string to variable
+         * $name = "John";
+         */
         if ($this->currentToken()['type'] == 'DQUOTE') {
             // Variable Strings
             $this->consume('DQUOTE');
@@ -112,6 +121,17 @@ class Parser {
             $this->consume('DQUOTE');
             $this->consume('SEMI');
 
+            return ['type' => 'Variable', 'name' => $variableName, 'value' => $variableValue];
+        }
+
+        /**
+         * Assign number to variable
+         * $number = 10;
+         */
+        if ($this->currentToken()['type'] == 'NUMBER') {
+            $variableValue = $this->currentToken()['value'];
+            $this->consume('NUMBER');
+            $this->consume('SEMI');
             return ['type' => 'Variable', 'name' => $variableName, 'value' => $variableValue];
         }
 

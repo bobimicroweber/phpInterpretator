@@ -33,6 +33,8 @@ class Lexer {
 
     const TOKEN_SLASH = 'SLASH';
 
+    const TOKEN_PLUS = 'PLUS';
+
     public function __construct($input) {
         $this->input = $input;
     }
@@ -82,7 +84,11 @@ class Lexer {
                 $tokens[] = ['type' => self::TOKEN_ASSIGN, 'value' => '='];
             } elseif ($char === '/') {
                 $tokens[] = ['type' => self::TOKEN_SLASH, 'value' => '/'];
-            } elseif (ctype_alpha($char) || $char === '_') {
+            }
+            elseif ($char === '+') {
+                $tokens[] = ['type' => self::TOKEN_PLUS, 'value' => '+'];
+            }
+            elseif (ctype_alpha($char) || $char === '_') {
                 $value = $this->consumeIdentifier();
                 $type = $this->determineType($value);
                 $tokens[] = ['type' => $type, 'value' => $value];
